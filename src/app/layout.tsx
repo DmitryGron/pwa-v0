@@ -1,89 +1,62 @@
-import type {Metadata} from 'next';
-import './globals.css';
-import { AuthProvider } from '@/context/auth-context';
-import { Toaster } from "@/components/ui/toaster";
+import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
 
-export const metadata: Metadata = {
-  title: 'Global News Now',
-  description: 'Your daily source of global news, summarized by AI.',
-  manifest: '/manifest.json',
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  themeColor: "#000000",
+  viewportFit: "cover"
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                  navigator.serviceWorker.register('/sw.js').then(registration => {
-                    console.log('SW registered: ', registration);
-                  }).catch(registrationError => {
-                    console.log('SW registration failed: ', registrationError);
-                  });
-                });
-              }
+export const metadata: Metadata = {
+  title: "Next.js PWA",
+  description: "Progressive Web App built with Next.js",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "NextPWA",
+    startupImage: ["/icons/apple-touch-icon.png"]
+  },
+  formatDetection: {
+    telephone: false
+  }
+};
 
-              let deferredPrompt;
-              window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                const installButton = document.getElementById('pwa-install-button');
-                if (installButton) {
-                  installButton.style.display = 'block';
-                }
-              });
+const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => (
+  <html lang="en">
+    <head>
+      <meta name="application-name" content="Next.js PWA" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      <meta name="apple-mobile-web-app-title" content="NextPWA" />
+      <meta name="mobile-web-app-capable" content="yes" />
+      <meta name="theme-color" content="#000000" />
+      <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+      
+      {/* iOS splash screens */}
+      <link rel="apple-touch-startup-image" href="/icons/apple-splash-2048-2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+      <link rel="apple-touch-startup-image" href="/icons/apple-splash-1668-2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+      <link rel="apple-touch-startup-image" href="/icons/apple-splash-1536-2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+      <link rel="apple-touch-startup-image" href="/icons/apple-splash-1125-2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+      <link rel="apple-touch-startup-image" href="/icons/apple-splash-750-1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    </head>
+    <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {children}
+    </body>
+  </html>
+);
 
-              window.addEventListener('appinstalled', () => {
-                const installButton = document.getElementById('pwa-install-button');
-                if (installButton) {
-                  installButton.style.display = 'none';
-                }
-              });
-            `,
-          }}
-        />
-      </head>
-      <body className="font-body antialiased">
-        <AuthProvider>
-          {children}
-          <Toaster />
-          <button id="pwa-install-button" style={{ display: 'none', position: 'fixed', bottom: '20px', right: '20px', zIndex: '1000' }}>
-            Install App
-          </button>
-        </AuthProvider>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              const installButton = document.getElementById('pwa-install-button');
-              if (installButton) {
-                installButton.addEventListener('click', () => {
-                  if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then((choiceResult) => {
-                      if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                      } else {
-                        console.log('User dismissed the install prompt');
-                      }
-                      deferredPrompt = null;
-                    });
-                  }
-                });
-              }
-            `,
-          }}
-        />
-      </body>
-    </html>
-  );
-}
+export default RootLayout;
