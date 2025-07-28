@@ -107,16 +107,52 @@ self.addEventListener('fetch', (event) => {
   // Strategy: Stale-While-Revalidate for other assets (CSS, JS)
   event.respondWith(
     caches.match(request).then(cachedResponse => {
-      const fetchPromise = fetch(request).then(networkResponse => {
-        if (networkResponse.ok && (request.method === 'GET' || request.method === 'HEAD')) {
-          const responseToCache = networkResponse.clone();
-          caches.open(STATIC_CACHE_NAME).then(cache => {
-            cache.put(request, responseToCache);
+      // If we already have a cached version, use it
+      if (cachedResponse) {
+        // Try to update the cache in the background, but don't block on it
+        fetch(request)
+          .then(networkResponse => {
+            if (networkResponse.ok && (request.method === 'GET' || request.method === 'HEAD')) {
+              const responseToCache = networkResponse.clone();
+              caches.open(STATIC_CACHE_NAME).then(cache => {
+                cache.put(request, responseToCache);
+              });
+            }
+          })
+          .catch(error => {
+            console.log('[SW] Background fetch failed:', error);
           });
-        }
-        return networkResponse;
-      });
-      return cachedResponse || fetchPromise;
+        
+        // Return the cached response immediately
+        return cachedResponse;
+      }
+      
+      // If no cached version, try the network but gracefully handle failure
+      return fetch(request)
+        .then(networkResponse => {
+          if (networkResponse.ok && (request.method === 'GET' || request.method === 'HEAD')) {
+            const responseToCache = networkResponse.clone();
+            caches.open(STATIC_CACHE_NAME).then(cache => {
+              cache.put(request, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(error => {
+          console.log('[SW] Fetch failed:', error);
+          // Return a graceful offline response for different content types
+          if (request.headers.get('accept').includes('image')) {
+            return new Response('<svg role="img" aria-labelledby="offline-title" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"><title id="offline-title">Offline</title><rect width="100%" height="100%" fill="#f5f5f5"/><path d="M200 150C177 150 160 167 160 190s17 40 40 40c22 0 40-17 40-40s-17-40-40-40zm20 55h-10v-10h10v10zm0-15h-10c0-25 25-10 25-30 0-10-10-15-20-15s-20 5-20 15h-10c0-20 15-25 30-25s30 10 30 25c0 30-25 15-25 30z" fill="#bdbdbd"/></svg>', {
+              headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'no-store' }
+            });
+          }
+          // For other resource types, return an appropriate offline response
+          return new Response('Resource not available offline', {
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: { 'Content-Type': 'text/plain' }
+          });
+        });
     })
   );
 });
