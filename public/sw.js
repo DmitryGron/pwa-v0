@@ -9,7 +9,10 @@ const IMAGE_CACHE_NAME = 'newsstand-image-v1';
 const APP_SHELL = [
   '/',
   '/offline',
-  '/manifest.json'
+  '/manifest.json',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
+  '/icons/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -47,8 +50,8 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Strategy: Cache First for images
-  if (/\.(?:png|gif|jpg|jpeg|svg|webp)$/i.test(url.pathname)) {
+  // Strategy: Cache First for icons and images
+  if (url.pathname.includes('/icons/') || /\.(?:png|gif|jpg|jpeg|svg|webp)$/i.test(url.pathname)) {
     event.respondWith(
       caches.match(request).then(cachedResponse => {
         return cachedResponse || fetch(request).then(networkResponse => {
@@ -68,35 +71,49 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then(response => {
-          // If we get a good response, cache it
-          const responseToCache = response.clone();
-          caches.open(DYNAMIC_CACHE_NAME).then(cache => {
-            cache.put(request, responseToCache);
-          });
+          // If we get a good response, cache it (only for GET/HEAD requests)
+          if (request.method === 'GET' || request.method === 'HEAD') {
+            const responseToCache = response.clone();
+            caches.open(DYNAMIC_CACHE_NAME).then(cache => {
+              cache.put(request, responseToCache);
+            });
+          }
           return response;
         })
-        .catch(() => {
+        .catch(async () => {
           // On network failure, try to serve from cache
-          return caches.match(request).then(cachedResponse => {
-            // For navigation, if it's not in cache, show the offline fallback page
-            if (request.mode === 'navigate' && !cachedResponse) {
-              return caches.match('/offline');
-            }
-            return cachedResponse;
-          });
+          const cachedResponse = await caches.match(request);
+          // For navigation, if it's not in cache, show the offline fallback page
+          if (request.mode === 'navigate' && !cachedResponse) {
+            return caches.match('/offline');
+          }
+          return cachedResponse;
         })
     );
     return;
+  }
+
+  // Check if this is a request we should handle
+  // Only cache HTTP(S) requests, not chrome-extension:// or other schemes
+  const requestUrl = new URL(request.url);
+  const isHttps = requestUrl.protocol === 'https:' || requestUrl.protocol === 'http:';
+  const isCacheable = request.method === 'GET' || request.method === 'HEAD';
+  
+  if (!isHttps || !isCacheable) {
+    // Pass through non-HTTP(S) requests or non-GET/HEAD requests without caching
+    return fetch(request);
   }
 
   // Strategy: Stale-While-Revalidate for other assets (CSS, JS)
   event.respondWith(
     caches.match(request).then(cachedResponse => {
       const fetchPromise = fetch(request).then(networkResponse => {
-        const responseToCache = networkResponse.clone();
-        caches.open(STATIC_CACHE_NAME).then(cache => {
-          cache.put(request, responseToCache);
-        });
+        if (networkResponse.ok && (request.method === 'GET' || request.method === 'HEAD')) {
+          const responseToCache = networkResponse.clone();
+          caches.open(STATIC_CACHE_NAME).then(cache => {
+            cache.put(request, responseToCache);
+          });
+        }
         return networkResponse;
       });
       return cachedResponse || fetchPromise;

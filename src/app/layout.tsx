@@ -53,7 +53,10 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => (
       <link rel="apple-touch-startup-image" href="/icons/apple-splash-1125-2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
       <link rel="apple-touch-startup-image" href="/icons/apple-splash-750-1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
     </head>
-    <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <body 
+      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      suppressHydrationWarning
+    >
         {children}
     </body>
   </html>
