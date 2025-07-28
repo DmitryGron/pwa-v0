@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import Image from 'next/image';
 import { registerServiceWorker } from "../utils/registerSW";
 import { detectDevice, DeviceInfo } from "../utils/deviceDetection";
+import InstallPWA from "../components/InstallPWA";
 
 type NetworkStatus = {
   online: boolean;
@@ -18,14 +19,9 @@ type NavigatorWithConnection = Navigator & {
   };
 };
 
-type BeforeInstallPromptEvent = Event & {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-};
+// BeforeInstallPromptEvent type moved to InstallPWA component
 
 const Home = () => {
-  const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
-  const [installable, setInstallable] = useState(false);
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
   const [networkStatus, setNetworkStatus] = useState<NetworkStatus>({
     online: true,
@@ -33,20 +29,7 @@ const Home = () => {
     effectiveType: null,
   });
 
-  // Check if the app is installable
-  useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setInstallPrompt(e);
-      setInstallable(true);
-    };
-
-    window.addEventListener("beforeinstallprompt", handler);
-    
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
-    };
-  }, []);
+  // Installation prompt is now handled by InstallPWA component
 
   // Register service worker manually in development
   useEffect(() => {
@@ -96,21 +79,7 @@ const Home = () => {
     };
   }, []);
 
-  const handleInstallClick = async () => {
-    if (!installPrompt) return;
-    
-    try {
-      const promptEvent = installPrompt as BeforeInstallPromptEvent;
-      promptEvent.prompt();
-      const result = await promptEvent.userChoice;
-      
-      if (result.outcome === "accepted") {
-        setInstallable(false);
-      }
-    } catch (error) {
-      console.error("Error installing app:", error);
-    }
-  };
+  // Install click handler now in InstallPWA component
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
@@ -136,8 +105,7 @@ const Home = () => {
         <div className="p-6">
           <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">PWA Features</h2>
           
-          <div className="space-y-4">
-            {/* Device Information */}
+          <div className="space-y-4">     
             <div className="border-l-4 border-yellow-500 pl-4 mb-4">
               <h3 className="font-medium text-gray-800 dark:text-white">Device Information</h3>
               {deviceInfo && (
@@ -158,7 +126,6 @@ const Home = () => {
               )}
             </div>
             
-            {/* Network Status */}
             <div className="border-l-4 border-blue-500 pl-4">
               <h3 className="font-medium text-gray-800 dark:text-white">Network Status</h3>
               <p className="text-gray-600 dark:text-gray-300 text-sm">
@@ -168,20 +135,12 @@ const Home = () => {
               </p>
             </div>
             
-            {/* Installable Status */}
+            {/* Installable Status - Now handled by InstallPWA component */}
             <div className="border-l-4 border-green-500 pl-4">
               <h3 className="font-medium text-gray-800 dark:text-white">Installable</h3>
               <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">
-                {installable ? "✅ This app can be installed on your device" : "This app may already be installed"}
+                This app can be installed on your device. Look for the install banner at the bottom of the screen.
               </p>
-              {installable && (
-                <button
-                  onClick={handleInstallClick}
-                  className="bg-blue-500 hover:bg-blue-600 text-white text-sm py-1 px-3 rounded transition-colors"
-                >
-                  Install App
-                </button>
-              )}
             </div>
             
             {/* Offline Support */}
@@ -198,6 +157,9 @@ const Home = () => {
       <footer className="max-w-md mx-auto text-center text-sm text-gray-500 dark:text-gray-400">
         <p>Try turning off your network to test offline functionality</p>
       </footer>
+
+      {/* Add to Home Screen prompt */}
+      <InstallPWA className="max-w-md mx-auto" />
     </div>
   );
 };
