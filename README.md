@@ -88,15 +88,6 @@ The application includes:
 - **Colors**: Update theme colors in `manifest.json` and `layout.tsx`
 - **App Name**: Change the app name in `manifest.json` and `layout.tsx`
 
-## Deployment
-
-The easiest way to deploy your Next.js PWA is to use [Vercel](https://vercel.com):
-
-```bash
-npm install -g vercel
-vercel
-```
-
 ## License
 
 This project is MIT licensed.
