@@ -23,11 +23,11 @@ export const theme = {
       grey500: '#BABABA', // Light grey 2
       grey600: '#DFDFDF', // Light grey 3
       
-      // BBC Sport
+      // Sport
       sport: '#FFDF43', // Sport yellow
       sportAlt: '#FFD230', // Sport secondary
       
-      // BBC category colors
+      // Category colors
       news: '#BB1919',
       iplayer: '#EF2525',
       sport: '#FFD230',
