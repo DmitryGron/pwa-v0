@@ -8,10 +8,10 @@ export const theme = {
   extend: {
     colors: {
       // Core palette
-      primary: '#BB1919', // BBC red
-      bbcRed: '#BB1919', // BBC red
-      bbcBlack: '#000000', // BBC black
-      bbcWhite: '#FFFFFF', // BBC white
+      primary: '#BB1919', // red
+      red: '#BB1919', // red
+      black: '#000000', // black
+      white: '#FFFFFF', // white
       
       // Dark greys
       grey100: '#141414', // Dark grey 1

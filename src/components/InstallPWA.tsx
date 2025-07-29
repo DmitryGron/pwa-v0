@@ -76,45 +76,45 @@ const InstallPWA = ({ className = '' }: InstallPWAProps) => {
   return (
     <div className={`fixed bottom-0 left-0 right-0 z-50 ${className}`}>
       {showIOSGuide ? (
-        <div className="bg-bbcRed text-bbcWhite p-4 mx-4 mb-4 rounded-lg shadow-lg">
+        <div className="bg-red text-white p-4 mx-4 mb-4 rounded-lg shadow-lg">
           <button 
             onClick={() => setShowIOSGuide(false)}
-            className="float-right bg-transparent border-none text-bbcWhite text-lg font-bold mr-1"
+            className="float-right bg-transparent border-none text-white text-lg font-bold mr-1"
             aria-label="Close guide"
           >
             &times;
           </button>
           <button 
             onClick={handleDismiss}
-            className="float-right bg-transparent border-none text-bbcWhite text-sm underline mr-2 mt-1"
+            className="float-right bg-transparent border-none text-white text-sm underline mr-2 mt-1"
             aria-label="Don't show again"
           >
             Don&apos;t show again
           </button>
           <h3 className="font-bold text-lg mb-2">Install this app on your iPhone</h3>
           <ol className="list-decimal pl-5 mb-2">
-            <li>Tap the share icon <span className="inline-block w-5 h-5 bg-bbcWhite rounded text-bbcRed text-center leading-5">↑</span> at the bottom of the screen</li>
+            <li>Tap the share icon <span className="inline-block w-5 h-5 bg-white rounded text-red text-center leading-5">↑</span> at the bottom of the screen</li>
             <li>Scroll down and tap <strong>Add to Home Screen</strong></li>
             <li>Tap <strong>Add</strong> in the top right corner</li>
           </ol>
           <p className="text-sm">This app will then appear on your home screen like any other app</p>
         </div>
       ) : (
-        <div className="bg-bbcRed text-bbcWhite p-4 mx-4 mb-4 rounded-lg shadow-lg flex items-center justify-between relative">
+        <div className="bg-red text-white p-4 mx-4 mb-4 rounded-lg shadow-lg flex items-center justify-between relative">
           <button 
             onClick={handleDismiss}
-            className="absolute top-1 right-1 bg-transparent border-none text-bbcWhite text-xl font-bold"
+            className="absolute top-1 right-1 bg-transparent border-none text-white text-xl font-bold"
             aria-label="Close"
           >
             &times;
           </button>
           <div>
-            <h3 className="font-bold">Install BBC App</h3>
+            <h3 className="font-bold">Install App</h3>
             <p className="text-sm">Install this app on your device for easy access</p>
           </div>
           <button 
             onClick={handleInstallClick}
-            className="bg-bbcWhite text-bbcRed font-bold py-1 px-2 rounded"
+            className="bg-white text-red font-bold py-1 px-2 rounded"
           >
             Install
           </button>
