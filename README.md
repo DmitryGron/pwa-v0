@@ -78,7 +78,7 @@ The application includes:
     layout.tsx      # App layout with PWA meta tags
     page.tsx        # Home page
   /components       # React components
-    OfflineDetector.tsx  # Offline detection component
+    InstallPWA.tsx  # Install PWA component
   /types            # TypeScript type definitions
 ```
 
