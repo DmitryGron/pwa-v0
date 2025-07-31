@@ -4,21 +4,20 @@ import { useCallback, useEffect, useState } from 'react';
 
 export type NotificationType = 'info' | 'success' | 'warning' | 'error';
 
-export type NotificationPosition = 'top-right' | 'below-trigger';  // Add more positions as needed
+export type NotificationPosition = 'top-right' | 'below-trigger';
 
 export type NotificationProps = {
   id: string;
   title: string;
   message: string;
   type?: NotificationType;
-  duration?: number; // in milliseconds, 0 means it won't auto-dismiss
+  duration?: number;
   onClose?: () => void;
   actions?: {
     text: string;
     onClick: () => void;
   }[];
   position?: NotificationPosition;
-  // Using a more flexible type for the ref that accepts HTMLButtonElement and null
   triggerRef?: React.RefObject<HTMLElement | null>;
 };
 
@@ -26,7 +25,7 @@ const Notification = ({
   title,
   message,
   type = 'info',
-  duration = 5000, // Default to 5 seconds
+  duration = 5000,
   onClose,
   actions = [],
   position = 'top-right',
@@ -35,7 +34,6 @@ const Notification = ({
   const [isVisible, setIsVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
 
-  // Color mappings based on notification type
   const typeStyles = {
     info: 'bg-blue-500',
     success: 'bg-green-500',
@@ -46,19 +44,17 @@ const Notification = ({
   const handleClose = useCallback(() => {
     setIsExiting(true);
     
-    // Wait for exit animation to complete before removing
     setTimeout(() => {
       setIsVisible(false);
       if (onClose) {
         onClose();
       }
-    }, 300); // Animation duration
+    }, 300);
   }, [onClose]);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
     
-    // Auto-dismiss after duration (if duration > 0)
     if (duration > 0) {
       timeoutId = setTimeout(() => {
         handleClose();
@@ -74,29 +70,22 @@ const Notification = ({
 
   if (!isVisible) return null;
 
-  // Calculate position styles only for below-trigger positioning
   const getPositionStyles = () => {
     if (position === 'below-trigger' && triggerRef?.current) {
-      // We know current is an HTMLElement if it's not null
       const element = triggerRef.current;
       const rect = element.getBoundingClientRect();
       const left = rect.left;
-      const top = rect.bottom + 8; // 8px below the button
+      const top = rect.bottom + 8;
       return { top: `${top}px`, left: `${left}px`, transform: 'none' };
     }
-    
-    // No inline styles for top-right since it's handled by the flex container
     return {};
   };
   
   const positionStyles = getPositionStyles();
   
-  // Determine classes based on position
   const positionClasses = position === 'below-trigger'
-    ? 'absolute' // For below-trigger, we'll use absolute positioning with inline styles
-    : ''; // For top-right, no positioning on individual notifications since it's handled by the container
-  
-  // Determine animation based on position
+    ? 'absolute'
+    : '';
   const animationClass = isExiting
     ? position === 'top-right' ? 'opacity-0 translate-x-4' : 'opacity-0'
     : 'opacity-100';

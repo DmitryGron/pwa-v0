@@ -113,7 +113,7 @@ const NotificationsDemo = () => {
       <h1 className="mb-6 text-3xl font-bold">Notifications Demo</h1>
 
       <div className="space-y-6">
-        {/* <section className="p-4 rounded-lg border">
+        <section className="p-4 rounded-lg border">
           <h2 className="mb-4 text-xl font-bold">In-App Notifications</h2>
           <div className="flex flex-wrap gap-2">
             <button 
@@ -151,7 +151,7 @@ const NotificationsDemo = () => {
               With Actions
             </button>
           </div>
-        </section> */}
+        </section>
 
         <section className="p-4 rounded-lg border">
           <h2 className="mb-4 text-xl font-bold">Push Notifications</h2>

@@ -3,7 +3,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState, useMemo } from 'react';
 import Notification, { NotificationProps } from '../components/Notification';
 
-// Omit props that are managed by the context
 type ShowNotificationOptions = Omit<NotificationProps, 'id' | 'onClose' | 'verticalPosition'>;
 
 interface NotificationContextType {
@@ -41,16 +40,11 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
     return id;
   }, [dismissNotification]);
 
-  // dismissNotification is defined above showNotification to avoid circular dependency
-
   const closeAllNotifications = useCallback(() => {
     setNotifications([]);
   }, []);
 
-  // Define service worker registration function within the provider
-  // This function is used to register the service worker for push notifications
   const registerServiceWorker = useCallback(async () => {
-    // Safely check if we're in a browser environment
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       try {
         const registration = await navigator.serviceWorker.register('/sw.js');
@@ -64,19 +58,15 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
     return null;
   }, []);
 
-  // Provide context value
   const contextValue = useMemo(() => ({
     showNotification,
     dismissNotification,
     closeAllNotifications,
-    registerServiceWorker, // Include in the context for use elsewhere
+    registerServiceWorker,
   }), [showNotification, dismissNotification, closeAllNotifications, registerServiceWorker]);
 
-  // Register service worker for push notifications
   useEffect(() => {
-    // Only run in browser environment
     if (typeof window !== 'undefined') {
-      // Use the existing utility function to register the service worker
       registerServiceWorker()
         .catch(error => console.error('Error registering service worker:', error));
     }
@@ -85,8 +75,7 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
   return (
     <NotificationContext.Provider value={contextValue}>
       {children}
-      {/* Container for notifications with consistent spacing */}
-      <div className="fixed top-4 right-4 z-50 flex flex-col gap-4">
+      <div className="flex fixed top-4 right-4 z-50 flex-col gap-4">
         {notifications.map(notification => (
           <Notification key={notification.id} {...notification} />
         ))}

@@ -9,15 +9,10 @@ type NotificationsType = {
   duration?: number;
   actions?: { text: string; onClick: () => void }[];
 };
-/**
- * Hook providing notification functionality throughout the app
- */
+
 export const useNotifications = () => {
   const { showNotification, dismissNotification, closeAllNotifications } = useNotification();
   
-  /**
-   * Show a notification with specified details
-   */
   const notify = useCallback((
     title: string, 
     message: string, 
@@ -34,46 +29,29 @@ export const useNotifications = () => {
     });
   }, [showNotification]);
   
-  /**
-   * Show a success notification
-   */
   const notifySuccess = useCallback(({title, message, duration, actions}: NotificationsType): string => {
     return notify(title, message, 'success', duration, actions);
   }, [notify]);
   
-  /**
-   * Show an error notification
-   */
   const notifyError = useCallback(({title, message, duration, actions}: NotificationsType): string => {
     return notify(title, message, 'error', duration, actions);
   }, [notify]);
   
-  /**
-   * Show a warning notification
-   */
   const notifyWarning = useCallback(({title, message, duration, actions}: NotificationsType): string => {
     return notify(title, message, 'warning', duration, actions);
   }, [notify]);
   
-  /**
-   * Show an info notification
-   */
   const notifyInfo = useCallback(({title, message, duration, actions}: NotificationsType): string => {
     return notify(title, message, 'info', duration, actions);
   }, [notify]);
   
-  /**
-   * Subscribe to push notifications
-   */
   const subscribeToPush = useCallback(async (serverPublicKey: string): Promise<boolean> => {
     try {
       const result = await subscribeToPushNotifications(serverPublicKey);
       
-      // Check if result is an error object
       if (result && typeof result === 'object' && 'error' in result) {
         const errorMessage = result.error;
         
-        // Handle platform-specific messaging
         if (errorMessage.includes('iOS')) {
           notifyWarning({
             title: 'iOS Requirements', 
@@ -90,11 +68,7 @@ export const useNotifications = () => {
         return false;
       }
       
-      // Regular subscription object
       if (result) {
-        // Here you would typically send the subscription to your server
-        // For example: await fetch('/api/subscribe', { method: 'POST', body: JSON.stringify(subscription) });
-        
         notifySuccess({
           title: 'Notifications Enabled', 
           message: 'You will now receive notifications from our app.',
@@ -120,12 +94,8 @@ export const useNotifications = () => {
     }
   }, [notifySuccess, notifyError, notifyWarning]);
   
-  /**
-   * Unsubscribe from push notifications
-   */
   const unsubscribeFromPush = useCallback(async (): Promise<boolean> => {
     try {
-      // Log the attempt to help with debugging
       console.log('Attempting to unsubscribe from push notifications...');
       
       const success = await unsubscribeFromPushNotifications();
@@ -133,9 +103,6 @@ export const useNotifications = () => {
       console.log('Unsubscribe operation returned:', success);
       
       if (success) {
-        // Here you would typically notify your server
-        // For example: await fetch('/api/unsubscribe', { method: 'POST', body: JSON.stringify({ userId: 'user-id' }) });
-        
         notifyInfo({
           title: 'Notifications Disabled', 
           message: 'You will no longer receive notifications from our app.',
@@ -162,9 +129,6 @@ export const useNotifications = () => {
     }
   }, [notifyInfo, notifyError]);
   
-  /**
-   * Check if push notifications are currently enabled
-   */
   const isPushEnabled = useCallback(async (): Promise<boolean> => {
     return await isPushNotificationSubscribed();
   }, []);
@@ -180,7 +144,6 @@ export const useNotifications = () => {
     subscribeToPush,
     unsubscribeFromPush,
     isPushEnabled,
-    // Export the direct showNotification function for positioning features
     showNotification,
   };
 };

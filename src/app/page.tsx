@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Image from 'next/image';
 import Link from 'next/link';
 import { detectDevice, DeviceInfo } from "../utils/deviceDetection";
-import InstallPWA from "../components/InstallPWA";
 
 type NetworkStatus = {
   online: boolean;
@@ -28,9 +27,6 @@ const Home = () => {
     type: null,
     effectiveType: null,
   });
-
-  // Installation prompt is now handled by InstallPWA component
-  // Service worker registration is now handled by NotificationContext
 
   // Detect device information - only run on client
   useEffect(() => {
@@ -155,7 +151,7 @@ const Home = () => {
               </p>
               <Link 
                 href="/notifications-demo" 
-                className="mt-2 inline-block px-4 py-2 bg-red text-white text-sm rounded hover:bg-red/90"
+                className="inline-block px-4 py-2 mt-2 text-sm text-white rounded bg-red hover:bg-red/90"
               >
                 Try Notifications
               </Link>
@@ -166,11 +162,8 @@ const Home = () => {
       
       <footer className="mx-auto max-w-md text-sm text-center text-gray-500 dark:text-gray-400">
         <p>Try turning off your network to test offline functionality</p>
-        <p className="mt-2">Visit the <Link href="/notifications-demo" className="text-red underline">notifications demo</Link> to try out the notification system</p>
+        <p className="mt-2">Visit the <Link href="/notifications-demo" className="underline text-red">notifications demo</Link> to try out the notification system</p>
       </footer>
-
-      {/* Add to Home Screen prompt */}
-      {/* <InstallPWA className="mx-auto max-w-md" /> */}
     </div>
   );
 };
