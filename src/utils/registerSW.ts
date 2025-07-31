@@ -1,10 +1,12 @@
 // Manual service worker registration for development mode
 
 export const registerServiceWorker = async (): Promise<void> => {
-  // Only register manually in development mode
-  if (process.env.NODE_ENV !== 'development') {
-    console.log('Skipping manual SW registration in production mode');
-    return;
+  // In production, Next.js PWA plugin should handle registration
+  // but we'll register manually as a fallback for all environments
+  const isProd = process.env.NODE_ENV === 'production';
+  
+  if (isProd) {
+    console.log('Manual SW registration as fallback in production mode');
   }
   if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
     try {

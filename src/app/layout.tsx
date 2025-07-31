@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { NotificationProvider } from "../contexts/NotificationContext";
+import NotificationPermissionPrompt from "../components/NotificationPermissionPrompt";
+import InstallPWA from "../components/InstallPWA";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,7 +60,11 @@ const RootLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => (
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       suppressHydrationWarning
     >
+      <NotificationProvider>
         {children}
+        <InstallPWA />
+        <NotificationPermissionPrompt />
+      </NotificationProvider>
     </body>
   </html>
 );

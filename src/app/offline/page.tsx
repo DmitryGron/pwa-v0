@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const OfflinePage = () => {
   return (
-    <div className="flex justify-center items-center p-4 min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex justify-center items-center p-4 min-h-screen dark:bg-gray-900 light:bg-gray-50">
       <div className="p-8 w-full max-w-md text-center bg-white rounded-lg shadow-lg dark:bg-gray-800">
         <div className="flex justify-center mb-6">
           <div className="relative mb-4 w-24 h-24">
